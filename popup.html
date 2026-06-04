@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Porter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0d0d0f;
+        --surface: #16161a;
+        --border: #2a2a32;
+        --accent: #f0c040;
+        --accent2: #e05a3a;
+        --text: #e8e8f0;
+        --muted: #6b6b80;
+        --success: #3cd68a;
+        --radius: 6px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        width: 380px;
+        min-height: 480px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        font-size: 12px;
+        overflow: hidden;
+      }
+
+      /* Header */
+      .header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 20px 12px;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(
+          circle,
+          rgba(240, 192, 64, 0.15) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .header-title {
+        font-family: "Syne", sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1;
+      }
+      .header-title span {
+        color: var(--accent);
+      }
+      .header-sub {
+        color: var(--muted);
+        font-size: 10px;
+        margin-top: 4px;
+        letter-spacing: 0.5px;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        color: var(--muted);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border: none;
+        background: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+
+      /* Panels */
+      .panel {
+        display: none;
+        padding: 16px 20px;
+      }
+      .panel.active {
+        display: block;
+      }
+
+      /* Section label */
+      .label {
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      /* Scope selector */
+      .scope-row {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .scope-btn {
+        flex: 1;
+        padding: 7px 4px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--muted);
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        text-align: center;
+        transition: all 0.15s;
+      }
+      .scope-btn:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .scope-btn.active {
+        border-color: var(--accent);
+        background: rgba(240, 192, 64, 0.08);
+        color: var(--accent);
+      }
+
+      /* Domain input */
+      .input-wrap {
+        margin-bottom: 14px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 9px 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        font-size: 11px;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      input[type="text"]:focus {
+        border-color: var(--accent);
+      }
+      input[type="text"]::placeholder {
+        color: var(--muted);
+      }
+
+      /* Buttons */
+      .btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: var(--radius);
+        border: none;
+        cursor: pointer;
+        font-family: "Syne", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #0d0d0f;
+      }
+      .btn-primary:hover {
+        background: #f5ce60;
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        margin-top: 8px;
+      }
+      .btn-secondary:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn-danger {
+        background: rgba(224, 90, 58, 0.1);
+        border: 1px solid var(--accent2);
+        color: var(--accent2);
+        margin-top: 8px;
+      }
+      .btn-danger:hover {
+        background: rgba(224, 90, 58, 0.2);
+      }
+
+      /* Cookie count badge */
+      .info-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 8px 12px;
+        margin-bottom: 14px;
+      }
+      .info-bar .count {
+        font-family: "Syne", sans-serif;
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+      .info-bar .desc {
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      /* File drop zone */
+      .dropzone {
+        border: 1.5px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 14px;
+        background: var(--surface);
+      }
+      .dropzone:hover,
+      .dropzone.drag-over {
+        border-color: var(--accent);
+        background: rgba(240, 192, 64, 0.04);
+      }
+      .dropzone-icon {
+        font-size: 28px;
+        margin-bottom: 6px;
+      }
+      .dropzone-text {
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.6;
+      }
+      .dropzone-text strong {
+        color: var(--text);
+      }
+      input[type="file"] {
+        display: none;
+      }
+
+      /* Import preview */
+      .preview-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        margin-bottom: 14px;
+        display: none;
+      }
+      .preview-box.visible {
+        display: block;
+      }
+      .preview-row {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 10px;
+        padding: 2px 0;
+      }
+      .preview-row span:last-child {
+        color: var(--text);
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%) translateY(60px);
+        background: var(--success);
+        color: #0d0d0f;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 11px;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 100;
+      }
+      .toast.error {
+        background: var(--accent2);
+        color: #fff;
+      }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* Divider */
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 14px 0;
+      }
+
+      /* Scrollable cookie list */
+      .cookie-list {
+        max-height: 120px;
+        overflow-y: auto;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 14px;
+      }
+      .cookie-list::-webkit-scrollbar {
+        width: 4px;
+      }
+      .cookie-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .cookie-list::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 2px;
+      }
+      .cookie-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 10px;
+        border-bottom: 1px solid var(--border);
+        font-size: 10px;
+      }
+      .cookie-item:last-child {
+        border-bottom: none;
+      }
+      .cookie-name {
+        color: var(--accent);
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cookie-domain {
+        color: var(--muted);
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: var(--muted);
+        font-size: 10px;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-title">Cookie<span>Porter</span></div>
+      <div class="header-sub">EXPORT · IMPORT · MIGRATE</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="export">⬆ Export</button>
+      <button class="tab" data-tab="import">⬇ Import</button>
+      <button class="tab" data-tab="about">· Info</button>
+    </div>
+
+    <!-- EXPORT PANEL -->
+    <div class="panel active" id="panel-export">
+      <div class="label">Export scope</div>
+      <div class="scope-row">
+        <button class="scope-btn active" data-scope="tab">Current tab</button>
+        <button class="scope-btn" data-scope="domain">Domain</button>
+        <button class="scope-btn" data-scope="all">All</button>
+      </div>
+
+      <div class="input-wrap" id="domain-input-wrap" style="display: none">
+        <input type="text" id="domain-input" placeholder="e.g: github.com" />
+      </div>
+
+      <div class="info-bar">
+        <div>
+          <div class="count" id="cookie-count">—</div>
+          <div class="desc">cookies found</div>
+        </div>
+        <button
+          class="btn btn-secondary"
+          style="width: auto; padding: 6px 12px; margin: 0; font-size: 10px"
+          id="btn-preview"
+        >
+          View list
+        </button>
+      </div>
+
+      <div class="cookie-list" id="cookie-list" style="display: none"></div>
+
+      <button class="btn btn-primary" id="btn-export">⬆ Export as JSON</button>
+      <button class="btn btn-secondary" id="btn-refresh">
+        ↻ Refresh count
+      </button>
+    </div>
+
+    <!-- IMPORT PANEL -->
+    <div class="panel" id="panel-import">
+      <div class="label">Cookie file</div>
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-icon">📂</div>
+        <div class="dropzone-text">
+          <strong>Drag your file here</strong><br />
+          or click to select it<br />
+          <span style="font-size: 9px; color: #444"
+            >.json exported by Cookie Porter</span
+          >
+        </div>
+        <input type="file" id="file-input" accept=".json" />
+      </div>
+
+      <div class="preview-box" id="import-preview">
+        <div class="preview-row">
+          <span>File:</span><span id="prev-file">—</span>
+        </div>
+        <div class="preview-row">
+          <span>Cookies:</span><span id="prev-count">—</span>
+        </div>
+        <div class="preview-row">
+          <span>Domains:</span><span id="prev-domains">—</span>
+        </div>
+        <div class="preview-row">
+          <span>Exported:</span><span id="prev-date">—</span>
+        </div>
+      </div>
+
+      <div class="label" style="margin-top: 4px">Options</div>
+      <div class="scope-row">
+        <button class="scope-btn active" data-import="merge">Merge</button>
+        <button class="scope-btn" data-import="replace">Replace</button>
+      </div>
+
+      <button class="btn btn-primary" id="btn-import" disabled>
+        ⬇ Import cookies
+      </button>
+      <button class="btn btn-danger" id="btn-clear">
+        ✕ Clear all tab cookies
+      </button>
+    </div>
+
+    <!-- ABOUT PANEL -->
+    <div class="panel" id="panel-about">
+      <div style="text-align: center; padding: 10px 0 16px">
+        <div
+          style="
+            font-family: Syne, sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+          "
+        >
+          🍪
+        </div>
+        <div
+          style="
+            font-family: Syne, sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            margin: 6px 0 2px;
+          "
+        >
+          Cookie Porter
+        </div>
+        <div style="color: var(--muted); font-size: 10px">v1.0.0</div>
+      </div>
+
+      <div
+        style="
+          color: var(--muted);
+          font-size: 10px;
+          line-height: 1.8;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 12px;
+        "
+      >
+        <strong style="color: var(--text)">What does it do?</strong><br />
+        Export your cookies to an encrypted JSON file that you can save to a USB
+        drive or cloud storage, and import them after formatting or on another
+        computer.<br /><br />
+        <strong style="color: var(--text)">Export modes</strong><br />
+        · <span style="color: var(--accent)">Current tab</span> — only the open
+        domain<br />
+        · <span style="color: var(--accent)">Domain</span> — any site you
+        specify<br />
+        · <span style="color: var(--accent)">All</span> — all browser cookies<br /><br />
+        <strong style="color: var(--text)">Security</strong><br />
+        Cookies never leave your computer except in the file you save. The
+        extension has no external server.
+      </div>
+
+      <hr class="divider" />
+
+      <div style="color: var(--muted); font-size: 10px; text-align: center">
+        Installed in developer mode<br />
+        <span style="color: var(--border)">●</span> No internet access
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
